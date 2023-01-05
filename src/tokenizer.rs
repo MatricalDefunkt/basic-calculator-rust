@@ -34,12 +34,13 @@ impl Tokenizer<'_> {
     }
     // Accomodate for negative numbers at beginning
     pub fn tokenize(&mut self) {
+        self.read_char();
         while self.read_position < self.input.len() {
             self.read_char();
             match self.current_char {
                 '+' => self.tokens.push(Tokens::Plus),
                 '-' => {
-                    if self.read_position == 1 {
+                    if self.read_position == 1 || self.peek_prev_char() == '(' {
                         let mut number = String::new();
                         number.push(self.current_char);
                         while self.peek_char().is_numeric() {
@@ -101,6 +102,14 @@ impl Tokenizer<'_> {
             0 as char
         } else {
             self.input.chars().nth(self.read_position).unwrap()
+        }
+    }
+
+    fn peek_prev_char(&self) -> char {
+        if self.position == 0 {
+            0 as char
+        } else {
+            self.input.chars().nth(self.position - 1).unwrap()
         }
     }
 }
