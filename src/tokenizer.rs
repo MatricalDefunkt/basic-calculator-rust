@@ -36,7 +36,6 @@ impl Tokenizer<'_> {
     pub fn tokenize(&mut self) {
         while self.read_position < self.input.len() {
             self.read_char();
-            println!("{:?} ", self.current_char);
             match self.current_char {
                 '+' => self.tokens.push(Tokens::Plus),
                 '-' => {
