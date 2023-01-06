@@ -74,12 +74,34 @@ impl Tokenizer<'_> {
                         self.tokens.push(Tokens::Number {
                             value: number.parse().unwrap(),
                         });
+                    } else if self.current_char == '.' {
+                        let current_token = self.tokens.pop().unwrap();
+                        match current_token {
+                            Tokens::Number { value } => {
+                                let mut number = String::new();
+                                number.push_str(&value.to_string());
+                                number.push(self.current_char);
+                                while self.peek_char().is_numeric() {
+                                    self.read_char();
+                                    number.push(self.current_char);
+                                }
+                                self.tokens.push(Tokens::Number {
+                                    value: number.parse().unwrap(),
+                                });
+                            }
+                            _ => {
+                                panic!(
+                                    "Unexpected character \"{}\" at position {}",
+                                    self.current_char, self.position
+                                );
+                            }
+                        }
                     } else {
                         // Panic if we encounter an unknown character and point to the position
 
                         panic!(
                             "Unknown character \"{}\" at position {}",
-                            self.current_char as i32, self.position
+                            self.current_char, self.position
                         );
                     }
                 }
