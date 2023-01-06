@@ -25,7 +25,6 @@ fn main() {
         let mut tokenizer = tokenizer::Tokenizer::new(input_str);
         tokenizer.tokenize();
         let mut parser = parser::Parser::new(tokenizer.tokens);
-        // Enable max precision for f32 display
         println!("{:.8}", parser.parse());
     }
 }

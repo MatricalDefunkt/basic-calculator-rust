@@ -32,7 +32,6 @@ impl Tokenizer<'_> {
         };
         t
     }
-    // Accomodate for negative numbers at beginning
     pub fn tokenize(&mut self) {
         while self.read_position < self.input.len() {
             self.read_char();
@@ -97,8 +96,6 @@ impl Tokenizer<'_> {
                             }
                         }
                     } else {
-                        // Panic if we encounter an unknown character and point to the position
-
                         panic!(
                             "Unknown character \"{}\" at position {}",
                             self.current_char, self.position
