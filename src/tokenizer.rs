@@ -34,9 +34,9 @@ impl Tokenizer<'_> {
     }
     // Accomodate for negative numbers at beginning
     pub fn tokenize(&mut self) {
-        self.read_char();
         while self.read_position < self.input.len() {
             self.read_char();
+            println!("{:?} ", self.current_char);
             match self.current_char {
                 '+' => self.tokens.push(Tokens::Plus),
                 '-' => {
