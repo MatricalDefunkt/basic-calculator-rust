@@ -1,10 +1,14 @@
-#[allow(unreachable_code)]
 mod parser;
 mod tokenizer;
+use std::{
+    io::{self, Write},
+    process::exit,
+};
 
 fn main() {
     loop {
-        print!("> ");
+        print!("Calculate > ");
+        io::stdout().flush().unwrap();
         let mut input = String::new();
         std::io::stdin().read_line(&mut input).unwrap();
         let l_parenthesis_count = input.matches("(").count();
@@ -20,11 +24,12 @@ fn main() {
         }
         let input_str = input.trim();
         if input_str == "exit" {
-            break;
+            exit(0);
         };
         let mut tokenizer = tokenizer::Tokenizer::new(input_str);
         tokenizer.tokenize();
+        // println!("{:?}", tokenizer.tokens);
         let mut parser = parser::Parser::new(tokenizer.tokens);
-        println!("{:.8}", parser.parse());
+        println!("= {:.8}", parser.parse());
     }
 }
