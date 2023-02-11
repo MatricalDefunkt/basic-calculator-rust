@@ -3,6 +3,7 @@ use crate::tokenizer::Tokens;
 pub struct Parser {
     tokens: Vec<Tokens>,
     position: usize,
+    // expected: Vec<Tokens>,
 }
 
 impl Parser {
@@ -10,6 +11,7 @@ impl Parser {
         Parser {
             tokens,
             position: 0,
+            // expected: Vec::new(),
         }
     }
 
@@ -84,6 +86,10 @@ impl Parser {
                 self.next_token();
                 result
             }
+            Tokens::Cos => self.parse_atom().cos(),
+            Tokens::Sin => self.parse_atom().sin(),
+            Tokens::Tan => self.parse_atom().tan(),
+            Tokens::Sqrt => self.parse_atom().sqrt(),
             _ => panic!("Unexpected token {:?}", token),
         }
     }

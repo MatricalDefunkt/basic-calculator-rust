@@ -11,6 +11,10 @@ pub enum Tokens {
     LeftParen,
     RightParen,
     Number { value: f32 },
+    Sin,
+    Cos,
+    Tan,
+    Sqrt,
 }
 
 pub struct Tokenizer<'a> {
@@ -89,21 +93,57 @@ impl Tokenizer<'_> {
                                 });
                             }
                             _ => {
-                                panic!(
-                                    "Unexpected character \"{}\" at position {}",
-                                    self.current_char, self.position
-                                );
+                                self.unexpected_char_error(self.position, self.current_char);
                             }
                         }
                     } else {
-                        panic!(
-                            "Unknown character \"{}\" at position {}",
-                            self.current_char, self.position
-                        );
+                        let current_index = self.position;
+                        let current_char = self.current_char;
+                        let mut math_func = String::new();
+                        math_func.push(self.current_char);
+                        while self.peek_char().is_alphabetic() {
+                            self.read_char();
+                            math_func.push(self.current_char);
+                        }
+                        match math_func.as_str() {
+                            "sin" => self.tokens.push(Tokens::Sin),
+                            "cos" => self.tokens.push(Tokens::Cos),
+                            "tan" => self.tokens.push(Tokens::Tan),
+                            "sqrt" => self.tokens.push(Tokens::Sqrt),
+                            _ => {
+                                self.unexpected_char_error(current_index, current_char);
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+
+    fn unexpected_char_error(&mut self, position: usize, first_char: char) {
+        let mut error_msg = String::new();
+        let mut padding = String::new();
+        error_msg.push_str(self.input);
+        error_msg.push('\n');
+        for _ in 0..self.position {
+            padding.push(' ');
+        }
+        error_msg.push_str(padding.as_str());
+        error_msg.push_str("^\n");
+        for _ in 0..3 {
+            error_msg.push_str(padding.as_str());
+            error_msg.push_str("|\n");
+        }
+        println!("{}", position);
+        panic!(
+            "Unexpected character \"{}\"\n\n{}",
+            if position == 0 {
+                self.current_char
+            } else {
+                first_char
+            },
+            error_msg
+        );
     }
     pub fn read_char(&mut self) {
         if self.read_position >= self.input.len() {
