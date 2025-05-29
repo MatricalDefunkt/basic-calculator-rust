@@ -1,5 +1,6 @@
 mod parser;
 mod tokenizer;
+mod ast; // Add this line to declare the ast module
 use std::{
     io::{self, Write},
     process::exit,
@@ -30,6 +31,13 @@ fn main() {
         tokenizer.tokenize();
         // println!("{:?}", tokenizer.tokens);
         let mut parser = parser::Parser::new(tokenizer.tokens);
-        println!("= {:.8}", parser.parse());
+        let ast = parser.parse();
+        // println!("AST: {:#?}", ast); // Optional: print the AST for debugging
+        let result = ast.eval();
+        if result.fract() == 0.0 {
+            println!("= {}", result as i64);
+        } else {
+            println!("= {:.8}", result);
+        }
     }
 }

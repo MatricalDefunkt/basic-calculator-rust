@@ -15,6 +15,9 @@ pub enum Tokens {
     Cos,
     Tan,
     Sqrt,
+    Pi, // Added Pi
+    E,  // Added E
+    Exp, // Added Exp
 }
 
 pub struct Tokenizer<'a> {
@@ -42,7 +45,7 @@ impl Tokenizer<'_> {
             match self.current_char {
                 '+' => self.tokens.push(Tokens::Plus),
                 '-' => {
-                    if self.read_position == 1 || self.peek_prev_char() == '(' {
+                    if self.position == 0 || self.peek_prev_char() == '(' || self.peek_prev_char().is_alphabetic() || ['+', '-', '*', '/', '^', '('].contains(&self.peek_prev_char()) {
                         let mut number = String::new();
                         number.push(self.current_char);
                         while self.peek_char().is_numeric() {
@@ -67,7 +70,7 @@ impl Tokenizer<'_> {
                 '\t' => continue,
                 '\n' => continue,
                 _ => {
-                    if self.current_char.is_numeric() {
+                    if self.current_char.is_numeric() || (self.current_char == '-' && (self.position == 0 || self.peek_prev_char() == '(' || self.peek_prev_char().is_alphabetic() || ['+', '-', '*', '/', '^', '('].contains(&self.peek_prev_char()))) {
                         let mut number = String::new();
                         number.push(self.current_char);
                         while self.peek_char().is_numeric() {
@@ -96,24 +99,29 @@ impl Tokenizer<'_> {
                                 self.unexpected_char_error(self.position, self.current_char);
                             }
                         }
-                    } else {
+                    } else if self.current_char.is_alphabetic() {
                         let current_index = self.position;
-                        let current_char = self.current_char;
-                        let mut math_func = String::new();
-                        math_func.push(self.current_char);
+                        let current_char_val = self.current_char;
+                        let mut identifier = String::new();
+                        identifier.push(self.current_char);
                         while self.peek_char().is_alphabetic() {
                             self.read_char();
-                            math_func.push(self.current_char);
+                            identifier.push(self.current_char);
                         }
-                        match math_func.as_str() {
+                        match identifier.to_lowercase().as_str() {
                             "sin" => self.tokens.push(Tokens::Sin),
                             "cos" => self.tokens.push(Tokens::Cos),
                             "tan" => self.tokens.push(Tokens::Tan),
                             "sqrt" => self.tokens.push(Tokens::Sqrt),
+                            "pi" => self.tokens.push(Tokens::Pi),
+                            "e" => self.tokens.push(Tokens::E),
+                            "exp" => self.tokens.push(Tokens::Exp),
                             _ => {
-                                self.unexpected_char_error(current_index, current_char);
+                                self.unexpected_char_error(current_index, current_char_val);
                             }
                         }
+                    } else {
+                        self.unexpected_char_error(self.position, self.current_char);
                     }
                 }
             }
